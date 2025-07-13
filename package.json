@@ -1,5 +1,5 @@
 {
-  "name": "ableton-link",
+  "name": "@ktamas77/abletonlink",
   "version": "0.1.0",
   "description": "Node.js native bindings for Ableton Link - Real-time music synchronization",
   "main": "index.js",

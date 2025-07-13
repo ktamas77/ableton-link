@@ -1,4 +1,4 @@
-# ableton-link
+# @ktamas77/abletonlink
 
 Node.js native bindings for Ableton Link - Real-time music synchronization
 
@@ -18,7 +18,7 @@ This package provides a TypeScript/Node.js wrapper around the native Ableton Lin
 ## Installation
 
 ```bash
-npm install ableton-link
+npm install @ktamas77/abletonlink
 ```
 
 Note: This package includes native bindings and will be compiled during installation.
@@ -26,7 +26,7 @@ Note: This package includes native bindings and will be compiled during installa
 ## Usage
 
 ```typescript
-import { AbletonLink } from 'ableton-link';
+import { AbletonLink } from '@ktamas77/abletonlink';
 
 // Create a new Link instance with initial tempo
 const link = new AbletonLink(120.0);
@@ -154,10 +154,7 @@ npm test
 npm publish --access public
 ```
 
-Note: Since the package name `ableton-link` is already taken on npm, you'll need to either:
-- Use a scoped package name (e.g., `@yourusername/ableton-link`)
-- Contact npm support if you own the existing package
-- Choose a different name
+The package is published as `@ktamas77/abletonlink` on npm.
 
 ## Requirements
 
