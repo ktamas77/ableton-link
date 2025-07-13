@@ -16,6 +16,8 @@ Napi::Object AbletonLinkWrapper::Init(Napi::Env env, Napi::Object exports) {
         InstanceMethod("getNumPeers", &AbletonLinkWrapper::GetNumPeers),
         InstanceMethod("setIsPlaying", &AbletonLinkWrapper::SetIsPlaying),
         InstanceMethod("isPlaying", &AbletonLinkWrapper::IsPlaying),
+        InstanceMethod("enableStartStopSync", &AbletonLinkWrapper::EnableStartStopSync),
+        InstanceMethod("isStartStopSyncEnabled", &AbletonLinkWrapper::IsStartStopSyncEnabled),
         InstanceMethod("forceBeatAtTime", &AbletonLinkWrapper::ForceBeatAtTime),
         InstanceMethod("getTimeForBeat", &AbletonLinkWrapper::GetTimeForBeat),
     });
@@ -136,6 +138,23 @@ Napi::Value AbletonLinkWrapper::IsPlaying(const Napi::CallbackInfo& info) {
     bool isPlaying = sessionState.isPlaying();
     
     return Napi::Boolean::New(env, isPlaying);
+}
+
+void AbletonLinkWrapper::EnableStartStopSync(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    
+    if (info.Length() < 1 || !info[0].IsBoolean()) {
+        Napi::TypeError::New(env, "Boolean expected").ThrowAsJavaScriptException();
+        return;
+    }
+
+    bool enable = info[0].As<Napi::Boolean>().Value();
+    link_->enableStartStopSync(enable);
+}
+
+Napi::Value AbletonLinkWrapper::IsStartStopSyncEnabled(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    return Napi::Boolean::New(env, link_->isStartStopSyncEnabled());
 }
 
 void AbletonLinkWrapper::ForceBeatAtTime(const Napi::CallbackInfo& info) {

@@ -7,9 +7,14 @@ const link = new AbletonLink(120.0);
 link.enable(true);
 console.log('Ableton Link enabled');
 
+// Enable start/stop sync to synchronize playing state with other Link peers
+link.enableStartStopSync(true);
+console.log('Start/stop sync enabled');
+
 // Display initial state
 console.log('Initial tempo:', link.getTempo(), 'BPM');
 console.log('Connected peers:', link.getNumPeers());
+console.log('Start/stop sync:', link.isStartStopSyncEnabled());
 
 // Set up a loop to display Link state
 setInterval(() => {

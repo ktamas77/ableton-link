@@ -27,6 +27,8 @@ private:
     Napi::Value GetNumPeers(const Napi::CallbackInfo& info);
     void SetIsPlaying(const Napi::CallbackInfo& info);
     Napi::Value IsPlaying(const Napi::CallbackInfo& info);
+    void EnableStartStopSync(const Napi::CallbackInfo& info);
+    Napi::Value IsStartStopSyncEnabled(const Napi::CallbackInfo& info);
     void ForceBeatAtTime(const Napi::CallbackInfo& info);
     Napi::Value GetTimeForBeat(const Napi::CallbackInfo& info);
     

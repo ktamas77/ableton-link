@@ -34,6 +34,9 @@ const link = new AbletonLink(120.0);
 // Enable Link
 link.enable(true);
 
+// Enable start/stop sync to synchronize transport state
+link.enableStartStopSync(true);
+
 // Get current tempo
 console.log('Current tempo:', link.getTempo());
 
@@ -83,6 +86,12 @@ Check if transport is playing.
 
 ### `setIsPlaying(playing: boolean): void`
 Start or stop transport playback.
+
+### `enableStartStopSync(enabled: boolean): void`
+Enable or disable start/stop synchronization with other Link peers. When enabled, play/stop state changes will be synchronized across all connected applications.
+
+### `isStartStopSyncEnabled(): boolean`
+Check if start/stop synchronization is enabled.
 
 ### `forceBeatAtTime(beat: number, time: number, quantum: number): void`
 Force a specific beat at a specific time with the given quantum.
