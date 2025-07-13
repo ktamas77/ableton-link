@@ -20,6 +20,9 @@ Napi::Object AbletonLinkWrapper::Init(Napi::Env env, Napi::Object exports) {
         InstanceMethod("isStartStopSyncEnabled", &AbletonLinkWrapper::IsStartStopSyncEnabled),
         InstanceMethod("forceBeatAtTime", &AbletonLinkWrapper::ForceBeatAtTime),
         InstanceMethod("getTimeForBeat", &AbletonLinkWrapper::GetTimeForBeat),
+        InstanceMethod("setNumPeersCallback", &AbletonLinkWrapper::SetNumPeersCallback),
+        InstanceMethod("setTempoCallback", &AbletonLinkWrapper::SetTempoCallback),
+        InstanceMethod("setStartStopCallback", &AbletonLinkWrapper::SetStartStopCallback),
     });
 
     constructor = Napi::Persistent(func);
@@ -196,6 +199,125 @@ Napi::Value AbletonLinkWrapper::GetTimeForBeat(const Napi::CallbackInfo& info) {
 
 std::chrono::microseconds AbletonLinkWrapper::getCurrentTime() const {
     return link_->clock().micros();
+}
+
+// Callback methods
+void AbletonLinkWrapper::SetNumPeersCallback(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    
+    if (info.Length() < 1 || !info[0].IsFunction()) {
+        Napi::TypeError::New(env, "Function expected").ThrowAsJavaScriptException();
+        return;
+    }
+    
+    std::lock_guard<std::mutex> lock(callbackMutex_);
+    
+    // Release any existing callback
+    if (numPeersCallback_) {
+        numPeersCallback_.Release();
+    }
+    
+    // Create a thread-safe function
+    numPeersCallback_ = Napi::ThreadSafeFunction::New(
+        env,
+        info[0].As<Napi::Function>(),
+        "NumPeersCallback",
+        0,
+        1
+    );
+    
+    // Set the callback on the Link instance
+    link_->setNumPeersCallback([this](std::size_t numPeers) {
+        handleNumPeersCallback(numPeers);
+    });
+}
+
+void AbletonLinkWrapper::SetTempoCallback(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    
+    if (info.Length() < 1 || !info[0].IsFunction()) {
+        Napi::TypeError::New(env, "Function expected").ThrowAsJavaScriptException();
+        return;
+    }
+    
+    std::lock_guard<std::mutex> lock(callbackMutex_);
+    
+    // Release any existing callback
+    if (tempoCallback_) {
+        tempoCallback_.Release();
+    }
+    
+    // Create a thread-safe function
+    tempoCallback_ = Napi::ThreadSafeFunction::New(
+        env,
+        info[0].As<Napi::Function>(),
+        "TempoCallback",
+        0,
+        1
+    );
+    
+    // Set the callback on the Link instance
+    link_->setTempoCallback([this](double tempo) {
+        handleTempoCallback(tempo);
+    });
+}
+
+void AbletonLinkWrapper::SetStartStopCallback(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    
+    if (info.Length() < 1 || !info[0].IsFunction()) {
+        Napi::TypeError::New(env, "Function expected").ThrowAsJavaScriptException();
+        return;
+    }
+    
+    std::lock_guard<std::mutex> lock(callbackMutex_);
+    
+    // Release any existing callback
+    if (startStopCallback_) {
+        startStopCallback_.Release();
+    }
+    
+    // Create a thread-safe function
+    startStopCallback_ = Napi::ThreadSafeFunction::New(
+        env,
+        info[0].As<Napi::Function>(),
+        "StartStopCallback",
+        0,
+        1
+    );
+    
+    // Set the callback on the Link instance
+    link_->setStartStopCallback([this](bool isPlaying) {
+        handleStartStopCallback(isPlaying);
+    });
+}
+
+// Callback handlers
+void AbletonLinkWrapper::handleNumPeersCallback(std::size_t numPeers) {
+    std::lock_guard<std::mutex> lock(callbackMutex_);
+    if (numPeersCallback_) {
+        numPeersCallback_.BlockingCall([numPeers](Napi::Env env, Napi::Function callback) {
+            callback.Call({Napi::Number::New(env, static_cast<double>(numPeers))});
+        });
+    }
+}
+
+void AbletonLinkWrapper::handleTempoCallback(double tempo) {
+    std::lock_guard<std::mutex> lock(callbackMutex_);
+    if (tempoCallback_) {
+        tempoCallback_.BlockingCall([tempo](Napi::Env env, Napi::Function callback) {
+            callback.Call({Napi::Number::New(env, tempo)});
+        });
+    }
+}
+
+void AbletonLinkWrapper::handleStartStopCallback(bool isPlaying) {
+    std::lock_guard<std::mutex> lock(callbackMutex_);
+    if (startStopCallback_) {
+        startStopCallback_.BlockingCall([isPlaying](Napi::Env env, Napi::Function callback) {
+            callback.Call({Napi::Boolean::New(env, isPlaying)});
+        });
+    }
 }
 
 // Module initialization

@@ -5,6 +5,7 @@
 #include <ableton/Link.hpp>
 #include <chrono>
 #include <memory>
+#include <mutex>
 
 class AbletonLinkWrapper : public Napi::ObjectWrap<AbletonLinkWrapper> {
 public:
@@ -32,8 +33,24 @@ private:
     void ForceBeatAtTime(const Napi::CallbackInfo& info);
     Napi::Value GetTimeForBeat(const Napi::CallbackInfo& info);
     
+    // Callback methods
+    void SetNumPeersCallback(const Napi::CallbackInfo& info);
+    void SetTempoCallback(const Napi::CallbackInfo& info);
+    void SetStartStopCallback(const Napi::CallbackInfo& info);
+    
     // Utility functions
     std::chrono::microseconds getCurrentTime() const;
+    
+    // Callback handling
+    void handleNumPeersCallback(std::size_t numPeers);
+    void handleTempoCallback(double tempo);
+    void handleStartStopCallback(bool isPlaying);
+    
+    // Thread-safe callback references
+    std::mutex callbackMutex_;
+    Napi::ThreadSafeFunction numPeersCallback_;
+    Napi::ThreadSafeFunction tempoCallback_;
+    Napi::ThreadSafeFunction startStopCallback_;
 };
 
 #endif // ABLETONLINK_H

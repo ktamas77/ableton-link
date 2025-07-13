@@ -78,6 +78,36 @@ export declare class AbletonLink {
      * @returns Time in seconds
      */
     getTimeForBeat(beat: number, quantum: number): number;
+
+    /**
+     * Enable or disable start/stop synchronization
+     * @param enabled Whether to enable start/stop sync
+     */
+    enableStartStopSync(enabled: boolean): void;
+
+    /**
+     * Check if start/stop synchronization is enabled
+     * @returns Whether start/stop sync is enabled
+     */
+    isStartStopSyncEnabled(): boolean;
+
+    /**
+     * Set a callback to be notified when the number of peers changes
+     * @param callback Function called with the new peer count
+     */
+    setNumPeersCallback(callback: (numPeers: number) => void): void;
+
+    /**
+     * Set a callback to be notified when the tempo changes
+     * @param callback Function called with the new tempo in BPM
+     */
+    setTempoCallback(callback: (tempo: number) => void): void;
+
+    /**
+     * Set a callback to be notified when the play/stop state changes
+     * @param callback Function called with the new playing state
+     */
+    setStartStopCallback(callback: (isPlaying: boolean) => void): void;
 }
 
 /**

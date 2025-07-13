@@ -53,6 +53,19 @@ const phase = link.getPhase(4.0); // 4-beat quantum
 // Transport control
 link.setIsPlaying(true);
 console.log('Is playing:', link.isPlaying());
+
+// Set up callbacks for real-time notifications
+link.setNumPeersCallback((numPeers) => {
+  console.log(`Peers changed: ${numPeers}`);
+});
+
+link.setTempoCallback((tempo) => {
+  console.log(`Tempo changed: ${tempo} BPM`);
+});
+
+link.setStartStopCallback((isPlaying) => {
+  console.log(`Playing state: ${isPlaying}`);
+});
 ```
 
 ## API Reference
@@ -95,6 +108,15 @@ Check if start/stop synchronization is enabled.
 
 ### `forceBeatAtTime(beat: number, time: number, quantum: number): void`
 Force a specific beat at a specific time with the given quantum.
+
+### `setNumPeersCallback(callback: (numPeers: number) => void): void`
+Register a callback to be notified when the number of connected peers changes.
+
+### `setTempoCallback(callback: (tempo: number) => void): void`
+Register a callback to be notified when the tempo changes.
+
+### `setStartStopCallback(callback: (isPlaying: boolean) => void): void`
+Register a callback to be notified when the play/stop state changes.
 
 ## Implementation Plan
 
