@@ -1,6 +1,6 @@
-# Source files (we ship the built binary)
-src/
-link/
+# Keep source files for compilation
+# src/
+# link/
 
 # Development files
 test/
