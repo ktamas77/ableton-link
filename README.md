@@ -73,21 +73,55 @@ link.setStartStopCallback((isPlaying) => {
 The `examples/` directory contains several scripts demonstrating different features:
 
 ### basic.js
+
 A simple example showing core Link functionality including tempo sync, beat/phase tracking, and transport control. Great starting point for understanding the basics.
 
 ### callbacks.js
+
 Demonstrates the callback system for real-time notifications when peers connect/disconnect, tempo changes, or transport starts/stops. Shows how to build reactive applications.
 
 ### quantized-launch.js
+
 Advanced example showing quantized beat alignment and synchronized starts. Essential for DAW-like applications that need sample-accurate synchronization with other Link peers.
 
 ### auto-tempo.js
+
 Shows how to automatically adopt the tempo from an existing Link session. Useful for applications that want to immediately sync with whatever session is already running.
 
+### monitor-playing.js
+
+Real-time monitor for the isPlaying state. Shows current play/stop status, tempo, beat position, and detects state changes. Useful for debugging transport synchronization issues.
+
+### diagnose-playing.js
+
+Diagnostic tool that checks all prerequisites for isPlaying functionality including start/stop sync, network connectivity, and peer discovery. Provides troubleshooting hints if synchronization isn't working.
+
+### diagnose-playing-sync.js
+
+Advanced diagnostic that analyzes the synchronization sequence when joining a session, helping identify timing issues with play state synchronization.
+
+### sync-with-playing.js
+
+Shows how to properly wait for initial synchronization when joining a Link session that may already be playing.
+
+### join-playing-session.js
+
+Best practices example demonstrating the recommended initialization sequence for reliable synchronization with existing Link sessions.
+
+### test-initial-sync.js
+
+Tests various timing scenarios for enableStartStopSync to understand synchronization behavior.
+
+### force-sync-workaround.js
+
+Demonstrates workarounds to force synchronization when joining a session that's already playing.
+
 ### typescript-example.ts
+
 Demonstrates TypeScript usage with full type safety and autocompletion support.
 
 Run any example with:
+
 ```bash
 node examples/basic.js
 ```
@@ -129,6 +163,10 @@ Get the current phase for the given quantum (beat subdivision).
 ### `isPlaying(): boolean`
 
 Check if transport is playing.
+
+**Important:** Start/stop sync must be enabled with `enableStartStopSync(true)` for this method to work correctly. Without start/stop sync, Link only synchronizes tempo and beat position, not play/stop state.
+
+**Note on synchronization:** When joining a Link session that's already playing, there may be a brief delay before the play state synchronizes. The initial state will be "stopped" until the Link protocol completes synchronization. Use the start/stop callback to be notified when the state updates. See the `join-playing-session.js` example for best practices.
 
 ### `setIsPlaying(playing: boolean): void`
 
@@ -194,6 +232,14 @@ abletonlink/
 │   ├── basic.js             # Basic usage example
 │   ├── callbacks.js         # Demonstrates callback functionality
 │   ├── quantized-launch.js  # Shows quantized launch features
+│   ├── auto-tempo.js        # Auto-adopt tempo from session
+│   ├── monitor-playing.js   # Real-time isPlaying monitor
+│   ├── diagnose-playing.js  # Diagnose transport sync issues
+│   ├── diagnose-playing-sync.js # Analyze sync sequence
+│   ├── sync-with-playing.js # Handle already-playing sessions
+│   ├── join-playing-session.js # Best practices for joining
+│   ├── test-initial-sync.js # Test sync timing scenarios
+│   ├── force-sync-workaround.js # Workarounds for sync issues
 │   └── typescript-example.ts # TypeScript usage example
 ├── test/                     # Test files
 │   ├── abletonlink.test.js  # Main test suite
