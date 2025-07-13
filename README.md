@@ -68,6 +68,30 @@ link.setStartStopCallback((isPlaying) => {
 });
 ```
 
+## Examples
+
+The `examples/` directory contains several scripts demonstrating different features:
+
+### basic.js
+A simple example showing core Link functionality including tempo sync, beat/phase tracking, and transport control. Great starting point for understanding the basics.
+
+### callbacks.js
+Demonstrates the callback system for real-time notifications when peers connect/disconnect, tempo changes, or transport starts/stops. Shows how to build reactive applications.
+
+### quantized-launch.js
+Advanced example showing quantized beat alignment and synchronized starts. Essential for DAW-like applications that need sample-accurate synchronization with other Link peers.
+
+### auto-tempo.js
+Shows how to automatically adopt the tempo from an existing Link session. Useful for applications that want to immediately sync with whatever session is already running.
+
+### typescript-example.ts
+Demonstrates TypeScript usage with full type safety and autocompletion support.
+
+Run any example with:
+```bash
+node examples/basic.js
+```
+
 ## API Reference
 
 ### `new AbletonLink(bpm: number)`
@@ -162,17 +186,30 @@ Get the time when the transport will start or stop. Returns the scheduled time i
 ### Project Structure
 
 ```
-ableton-link/
+abletonlink/
 ├── src/                      # C++ source files
 │   ├── abletonlink.cc       # Main addon implementation
 │   └── abletonlink.h        # Header file
-├── lib/                      # Compiled output
+├── examples/                 # Example scripts
+│   ├── basic.js             # Basic usage example
+│   ├── callbacks.js         # Demonstrates callback functionality
+│   ├── quantized-launch.js  # Shows quantized launch features
+│   └── typescript-example.ts # TypeScript usage example
+├── test/                     # Test files
+│   ├── abletonlink.test.js  # Main test suite
+│   └── link.test.js         # Additional tests
+├── build/                    # Compiled native module (generated)
 ├── link/                     # Ableton Link SDK (git submodule)
+├── .husky/                   # Git hooks
+│   └── pre-commit           # Runs prettier and tests
 ├── binding.gyp              # node-gyp build configuration
 ├── index.js                 # Main entry point
 ├── index.d.ts               # TypeScript definitions
 ├── package.json             # NPM package configuration
 ├── tsconfig.json            # TypeScript configuration
+├── jest.config.js           # Jest test configuration
+├── .prettierrc.json         # Prettier code formatting config
+├── .prettierignore          # Files to ignore for formatting
 └── README.md                # This file
 ```
 
