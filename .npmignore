@@ -1,0 +1,32 @@
+# Source files (we ship the built binary)
+src/
+link/
+
+# Development files
+test/
+examples/
+coverage/
+.github/
+
+# Config files
+.gitignore
+.gitmodules
+jest.config.js
+tsconfig.json
+.eslintrc*
+.prettierrc*
+
+# Build artifacts we don't need
+build/Release/.deps/
+build/Release/obj.target/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keep only the built .node file
+!build/Release/*.node
