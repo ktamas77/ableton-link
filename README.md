@@ -71,62 +71,96 @@ link.setStartStopCallback((isPlaying) => {
 ## API Reference
 
 ### `new AbletonLink(bpm: number)`
+
 Creates a new Ableton Link instance with the specified initial tempo.
 
 ### `enable(enabled: boolean): void`
+
 Enable or disable Link synchronization.
 
 ### `isEnabled(): boolean`
+
 Check if Link is currently enabled.
 
 ### `getTempo(): number`
+
 Get the current tempo in BPM.
 
 ### `setTempo(bpm: number): void`
+
 Set a new tempo in BPM.
 
 ### `getNumPeers(): number`
+
 Get the number of connected Link peers.
 
 ### `getBeat(): number`
+
 Get the current beat position.
 
 ### `getPhase(quantum: number): number`
+
 Get the current phase for the given quantum (beat subdivision).
 
 ### `isPlaying(): boolean`
+
 Check if transport is playing.
 
 ### `setIsPlaying(playing: boolean): void`
+
 Start or stop transport playback.
 
 ### `enableStartStopSync(enabled: boolean): void`
+
 Enable or disable start/stop synchronization with other Link peers. When enabled, play/stop state changes will be synchronized across all connected applications.
 
 ### `isStartStopSyncEnabled(): boolean`
+
 Check if start/stop synchronization is enabled.
 
 ### `forceBeatAtTime(beat: number, time: number, quantum: number): void`
+
 Force a specific beat at a specific time with the given quantum.
 
 ### `setNumPeersCallback(callback: (numPeers: number) => void): void`
+
 Register a callback to be notified when the number of connected peers changes.
 
 ### `setTempoCallback(callback: (tempo: number) => void): void`
+
 Register a callback to be notified when the tempo changes.
 
 ### `setStartStopCallback(callback: (isPlaying: boolean) => void): void`
+
 Register a callback to be notified when the play/stop state changes.
+
+### `requestBeatAtTime(beat: number, time: number, quantum: number): void`
+
+Request a specific beat to occur at a specific time. When connected to peers, this will quantize to the nearest quantum boundary for synchronized starts.
+
+### `requestBeatAtStartPlayingTime(beat: number, quantum: number): void`
+
+Request a specific beat (usually 0) when transport starts playing. Useful for resetting the beat counter on playback start.
+
+### `setIsPlayingAndRequestBeatAtTime(isPlaying: boolean, time: number, beat: number, quantum: number): void`
+
+Combined operation to start/stop playback and align beats at a specific time. Perfect for synchronized launches.
+
+### `timeForIsPlaying(): number`
+
+Get the time when the transport will start or stop. Returns the scheduled time in seconds.
 
 ## Implementation Plan
 
 ### Components
+
 - **Ableton Link SDK (C++)** – Official synchronization engine from Ableton
 - **Node.js Native Addon** – C++ bridge to expose Link functionality to JS/TS
 - **node-gyp** – Build system for compiling the native module
 - **TypeScript Definitions** – Clean and typed API exposed to the user
 
 ### Project Structure
+
 ```
 ableton-link/
 ├── src/                      # C++ source files
@@ -145,17 +179,20 @@ ableton-link/
 ### Building from Source
 
 1. Clone the repository with submodules:
+
 ```bash
 git clone --recursive https://github.com/ktamas77/ableton-link.git
 cd ableton-link
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Build the native addon:
+
 ```bash
 npm run build
 ```
@@ -165,22 +202,26 @@ npm run build
 To publish this package to npm:
 
 1. **Make sure you're logged in to npm:**
+
 ```bash
 npm login
 ```
 
 2. **Update the version in package.json:**
+
 ```bash
 npm version patch  # or minor/major
 ```
 
 3. **Build and test the package:**
+
 ```bash
 npm run build
 npm test
 ```
 
 4. **Publish to npm:**
+
 ```bash
 npm publish --access public
 ```

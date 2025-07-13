@@ -20,6 +20,10 @@ Napi::Object AbletonLinkWrapper::Init(Napi::Env env, Napi::Object exports) {
         InstanceMethod("isStartStopSyncEnabled", &AbletonLinkWrapper::IsStartStopSyncEnabled),
         InstanceMethod("forceBeatAtTime", &AbletonLinkWrapper::ForceBeatAtTime),
         InstanceMethod("getTimeForBeat", &AbletonLinkWrapper::GetTimeForBeat),
+        InstanceMethod("requestBeatAtTime", &AbletonLinkWrapper::RequestBeatAtTime),
+        InstanceMethod("requestBeatAtStartPlayingTime", &AbletonLinkWrapper::RequestBeatAtStartPlayingTime),
+        InstanceMethod("setIsPlayingAndRequestBeatAtTime", &AbletonLinkWrapper::SetIsPlayingAndRequestBeatAtTime),
+        InstanceMethod("timeForIsPlaying", &AbletonLinkWrapper::TimeForIsPlaying),
         InstanceMethod("setNumPeersCallback", &AbletonLinkWrapper::SetNumPeersCallback),
         InstanceMethod("setTempoCallback", &AbletonLinkWrapper::SetTempoCallback),
         InstanceMethod("setStartStopCallback", &AbletonLinkWrapper::SetStartStopCallback),
@@ -199,6 +203,73 @@ Napi::Value AbletonLinkWrapper::GetTimeForBeat(const Napi::CallbackInfo& info) {
 
 std::chrono::microseconds AbletonLinkWrapper::getCurrentTime() const {
     return link_->clock().micros();
+}
+
+// Quantized launch methods
+void AbletonLinkWrapper::RequestBeatAtTime(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    
+    if (info.Length() < 3 || !info[0].IsNumber() || !info[1].IsNumber() || !info[2].IsNumber()) {
+        Napi::TypeError::New(env, "Beat (number), time (number), and quantum (number) expected").ThrowAsJavaScriptException();
+        return;
+    }
+
+    double beat = info[0].As<Napi::Number>().DoubleValue();
+    double timeInSeconds = info[1].As<Napi::Number>().DoubleValue();
+    double quantum = info[2].As<Napi::Number>().DoubleValue();
+    
+    auto time = std::chrono::microseconds(static_cast<long long>(timeInSeconds * 1000000.0));
+    
+    auto sessionState = link_->captureAppSessionState();
+    sessionState.requestBeatAtTime(beat, time, quantum);
+    link_->commitAppSessionState(sessionState);
+}
+
+void AbletonLinkWrapper::RequestBeatAtStartPlayingTime(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    
+    if (info.Length() < 2 || !info[0].IsNumber() || !info[1].IsNumber()) {
+        Napi::TypeError::New(env, "Beat (number) and quantum (number) expected").ThrowAsJavaScriptException();
+        return;
+    }
+
+    double beat = info[0].As<Napi::Number>().DoubleValue();
+    double quantum = info[1].As<Napi::Number>().DoubleValue();
+    
+    auto sessionState = link_->captureAppSessionState();
+    sessionState.requestBeatAtStartPlayingTime(beat, quantum);
+    link_->commitAppSessionState(sessionState);
+}
+
+void AbletonLinkWrapper::SetIsPlayingAndRequestBeatAtTime(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    
+    if (info.Length() < 4 || !info[0].IsBoolean() || !info[1].IsNumber() || !info[2].IsNumber() || !info[3].IsNumber()) {
+        Napi::TypeError::New(env, "Playing state (boolean), time (number), beat (number), and quantum (number) expected").ThrowAsJavaScriptException();
+        return;
+    }
+
+    bool isPlaying = info[0].As<Napi::Boolean>().Value();
+    double timeInSeconds = info[1].As<Napi::Number>().DoubleValue();
+    double beat = info[2].As<Napi::Number>().DoubleValue();
+    double quantum = info[3].As<Napi::Number>().DoubleValue();
+    
+    auto time = std::chrono::microseconds(static_cast<long long>(timeInSeconds * 1000000.0));
+    
+    auto sessionState = link_->captureAppSessionState();
+    sessionState.setIsPlayingAndRequestBeatAtTime(isPlaying, time, beat, quantum);
+    link_->commitAppSessionState(sessionState);
+}
+
+// Transport timing
+Napi::Value AbletonLinkWrapper::TimeForIsPlaying(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    
+    auto sessionState = link_->captureAppSessionState();
+    auto time = sessionState.timeForIsPlaying();
+    
+    double timeInSeconds = static_cast<double>(time.count()) / 1000000.0;
+    return Napi::Number::New(env, timeInSeconds);
 }
 
 // Callback methods

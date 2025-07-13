@@ -33,6 +33,14 @@ private:
     void ForceBeatAtTime(const Napi::CallbackInfo& info);
     Napi::Value GetTimeForBeat(const Napi::CallbackInfo& info);
     
+    // Quantized launch methods
+    void RequestBeatAtTime(const Napi::CallbackInfo& info);
+    void RequestBeatAtStartPlayingTime(const Napi::CallbackInfo& info);
+    void SetIsPlayingAndRequestBeatAtTime(const Napi::CallbackInfo& info);
+    
+    // Transport timing
+    Napi::Value TimeForIsPlaying(const Napi::CallbackInfo& info);
+    
     // Callback methods
     void SetNumPeersCallback(const Napi::CallbackInfo& info);
     void SetTempoCallback(const Napi::CallbackInfo& info);
