@@ -19,10 +19,16 @@ tsconfig.json
 # Build artifacts we don't need
 build/Release/.deps/
 build/Release/obj.target/
+build/*.mk
+build/Makefile
+build/gyp-mac-tool
+build/binding.Makefile
+build/node_modules/
 
 # IDE
 .vscode/
 .idea/
+.claude/
 
 # OS
 .DS_Store
